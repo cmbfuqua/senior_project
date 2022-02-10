@@ -1,25 +1,44 @@
 # Prep for MATH 423
-1/28/2022:
-- chapter 10: infinite series first section
-- chapter 15: multiple integrals
-- get the 113 calc book x
 
 ## Chapter 1
+### 1.5
+a\*a\*a\*a\*a = $a^{5}$
+
+$a^{-n} = \frac{1}{a^{n}} = (\frac{1}{a})^{n}$
+
+$a^{\frac{m}{n}} = \sqrt[n]{a^{m}}$
+
+$a^{x} * a^{y} = a^{x+y}$
+
+$\frac{a^{x}}{a^{y}} = a^{x-y}$
+
+$(a^{x})^{y} = (a^{y})^{x} = a^{xy}$
+
+$\frac{a^{x}}{b^{x}} = (\frac{a}{b})^{x}$
+
+$a^{x}*b^{x} = (ab)^{x}s$
+
 
 ## Chapter 2
 
 ## Chapter 3
+3.2
+3.3
+3.8
 
 ## Chapter 4
 
 ## Chapter 5
-
+5.3
+5.4
+5.5
+5.6
 ## Chapter 6
 
 ## Chapter 7
 
 ## Chapter 8
-
+8.2
 ## Chapter 9
 
 ## Chapter 10: Infinite Sequences and Series

@@ -1,0 +1,2 @@
+- pick a data set and then show how it applies with various algorithms.
+- Use H&M Kaggle competition as my data and show how it applies with various outlier detection models.  

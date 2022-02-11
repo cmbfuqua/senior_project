@@ -16,7 +16,7 @@ $(a^{x})^{y} = (a^{y})^{x} = a^{xy}$
 
 $\frac{a^{x}}{b^{x}} = (\frac{a}{b})^{x}$
 
-$a^{x}*b^{x} = (ab)^{x}s$
+$a^{x}*b^{x} = (ab)^{x}$
 
 
 ## Chapter 2

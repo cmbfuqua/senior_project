@@ -11,6 +11,25 @@ from sklearn import metrics
 
 # %%
 dat = pd.read_csv('https://raw.githubusercontent.com/byui-cse/cse450-course/master/data/housing.csv')
+# Top 3 features: ['sqft_living','grade','sqft_lot15']
+#%%
+alt.data_transformers.enable(max_rows = None)
+# Create charts for presentation
+sqft = alt.Chart(dat, title = 'Sqft Living Correlation').mark_point().encode(
+    alt.X('price',title = 'Price'),
+    alt.Y('sqft_living', title = 'Square ft Living Space')
+)
+grd = alt.Chart(dat, title = 'Grade Correlation').mark_point().encode(
+    alt.X('price',title = 'Price'),
+    alt.Y('grade', title = 'Grade of House')
+)
+
+lot = alt.Chart(dat,title = 'Sqft Lot Correlation').mark_point().encode(
+    alt.X('price', title = 'Price'),
+    alt.Y('sqft_lot',title = 'Sqft Plot of Land')
+    
+)
+sqft|grd|lot
 #%% 
 # get rid of non-essential columns
 def clean_house(dat):
@@ -52,6 +71,7 @@ def clean_house(dat):
 #%%
 # clean up all data
 data_train = clean_house(dat)
+# Top 3 features: ['sqft_living','grade','sqft_lot15']
 # %% This cell runs the model
 # create x & y values
 x = data_train.drop(columns = 'price')
@@ -75,3 +95,6 @@ mae = metrics.mean_absolute_error(y_test,y_pred).round(2)
 print('MSE from data (Sensitive to large prediction error): {}'.format(mse))
 print('MAE from data (Treats all errors equally): {}'.format(mae))
 print('RMSE from data (Actual Units Off): {}'.format(rmse))
+
+
+# %%

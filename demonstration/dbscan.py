@@ -31,6 +31,7 @@ lot = alt.Chart(dat,title = 'Sqft Lot Correlation').mark_point().encode(
 )
 
 normal_chart = sqft|grd|lot
+
 #%% 
 # get rid of non-essential columns
 def clean_house(dat):
@@ -73,6 +74,39 @@ def clean_house(dat):
 # clean up all data
 data_train = clean_house(dat)
 # Top 3 features: ['sqft_living','grade','sqft_lot15']
+#%%
+#%%
+##############################
+# import new models
+##############################
+from sklearn.cluster import DBSCAN
+
+##################################
+# clean up data with outlier detection model
+##################################
+detection_model = DBSCAN()
+
+
+###################################
+# Create new charts
+###################################
+nsqft = alt.Chart(dat, title = 'Sqft Living Correlation').mark_point().encode(
+    alt.X('price',title = 'Price'),
+    alt.Y('sqft_living', title = 'Square ft Living Space')
+)
+ngrd = alt.Chart(dat, title = 'Grade Correlation').mark_point().encode(
+    alt.X('price',title = 'Price'),
+    alt.Y('grade', title = 'Grade of House')
+)
+
+nlot = alt.Chart(dat,title = 'Sqft Lot Correlation').mark_point().encode(
+    alt.X('price', title = 'Price'),
+    alt.Y('sqft_lot',title = 'Sqft Plot of Land')
+    
+)
+
+new_chart = nsqft|ngrd|nlot
+new_chart
 # %% This cell runs the model
 # create x & y values
 x = data_train.drop(columns = 'price')
@@ -99,5 +133,5 @@ print('RMSE from data (Actual Units Off): {}'.format(rmse))
 
 
 # %%
-normal_chart.save('Normal_chart.png')
+new_chart.save('New_chart.png')
 

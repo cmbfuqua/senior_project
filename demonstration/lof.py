@@ -80,29 +80,19 @@ normal_chart = sqft|grd|lot
 ##############################
 # import new models
 ##############################
-from sklearn.cluster import DBSCAN
+from sklearn.neighbors import LocalOutlierFactor as lof
 import numpy as np
 ##################################
 # clean up data with outlier detection model
 ##################################
-detection_model = DBSCAN(
-    eps = 10,
-    min_samples = 10
+detection_model = lof(
+    n_neighbors=2
 )
 
-db = detection_model.fit(data_train)
+pred = pd.DataFrame(detection_model.fit_predict(data_train))
 
-core_samples_mask = np.zeros_like(db.labels_, dtype = bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
-
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise_ = list(labels).count(-1)
-
-print("Estimated number of clusters: %d" % n_clusters_)
-print("Estimated number of noise points: %d" % n_noise_)
-
-data_clean = data_train.iloc[db.core_sample_indices_]
+indicies = pred.loc[pred[0] == 1].index
+data_clean = data_train.iloc[indicies]
 #%%
 ###################################
 # Create new charts
@@ -155,23 +145,20 @@ print('Base RMSE 217,240')
 normal_chart & new_chart 
 
 #%%
-def create_effective_charts(data_train,es,mins):
-    from sklearn.cluster import DBSCAN
+def create_effective_charts(data_train,neigh):
+    from sklearn.neighbors import LocalOutlierFactor as lof
     import numpy as np
     ##################################
     # clean up data with outlier detection model
     ##################################
-    detection_model = DBSCAN(
-        eps = es,
-        min_samples = mins
+    detection_model = lof(
+        n_neighbors=neigh
     )
 
-    db = detection_model.fit(data_train)
+    pred = pd.DataFrame(detection_model.fit_predict(data_train))
 
-    core_samples_mask = np.zeros_like(db.labels_, dtype = bool)
-    core_samples_mask[db.core_sample_indices_] = True
-
-    data_clean = data_train.iloc[db.core_sample_indices_]
+    indicies = pred.loc[pred[0] == 1].index
+    data_clean = data_train.iloc[indicies]    
 
     #This cell runs the model
     # create x & y values
@@ -196,64 +183,55 @@ def create_effective_charts(data_train,es,mins):
 # %%
 import time
 rmse = []
-eps = []
-msamples = []
+neighbors = []
 shape = []
 base = []
-for ep in [1,2,3,7,8,9]:
-    for samp in [6,7,8,9]:
-        tic = time.perf_counter() # start timer
-        rmse_loop,dat_shape = create_effective_charts(data_train,ep,samp)
-        # append values to lists
-        eps.append(ep)
-        msamples.append(samp)
-        rmse.append(rmse_loop)
-        shape.append(dat_shape)
-        base.append(20000)
-        toc = time.perf_counter() # end timer
-        print('eps: {}  sample: {}  time: {}\n\n'.format(ep,samp,round(toc - tic,2)))
+for neighbor in [4,5,6,7,8,9,10]:
+    tic = time.perf_counter() # start timer
+    rmse_loop,dat_shape = create_effective_charts(data_train,neighbor)
+    # append values to lists
+    neighbors.append(neighbor)
+    rmse.append(rmse_loop)
+    shape.append(dat_shape)
+    base.append(20000)
+    toc = time.perf_counter() # end timer
+    print('neighbors: {}  time: {}\n\n'.format(neighbor,round(toc - tic,2)))
 df_results = pd.DataFrame(
     {'rmse_values':rmse,
-    'eps':eps,
-    'min_samples':msamples,
+    'n_neighbors':neighbors,
     'remaining_rows':shape,
     'start_rows':base}
 )
 # %%
-chart1 = alt.Chart(df_results).mark_line().encode(
-    alt.X('eps'),
-    alt.Y('rmse_values'),
-    alt.Color('min_samples:N')
+chart1 = alt.Chart(df_results,title = 'RMSE Curve').mark_line().encode(
+    alt.X('n_neighbors'),
+    alt.Y('rmse_values')
 )
 chart1
 # %%
 df_results['percent_remaining'] = df_results.remaining_rows/20000
-chart2 = alt.Chart(df_results).mark_line().encode(
-    alt.X('eps'),
+chart2 = alt.Chart(df_results,title = '% Rows Remaining').mark_line().encode(
+    alt.X('n_neighbors'),
     alt.Y('percent_remaining'),
     alt.Color('min_samples:O',sort='descending')
 )
 chart_fin = chart1 | chart2
 # %%
-chart_fin.save('dbscan_percent_remaining.png')
+chart_fin.save('lof_percent_remaining.png')
 # %%
-from sklearn.cluster import DBSCAN
-import numpy as np
 ##################################
 # clean up data with outlier detection model
 ##################################
 # Insert the best eps and min_samples values found above
-eps_best = 8
-min_samples_best = 9
 
-detection_model = DBSCAN(
-    eps = eps_best,
-    min_samples = min_samples_best
+detection_model = lof(
+    n_neighbors=10
 )
 
-db = detection_model.fit(data_train)
+pred = pd.DataFrame(detection_model.fit_predict(data_train))
 
-data_clean = data_train.iloc[db.core_sample_indices_]
+indicies = pred.loc[pred[0] == 1].index
+data_clean = data_train.iloc[indicies]
 
 ###################################
 # Create new charts
@@ -274,6 +252,6 @@ nlot = alt.Chart(data_clean,title = 'Sqft Lot Correlation').mark_point().encode(
 )
 
 new_chart = nsqft|ngrd|nlot
-new_chart.save('dbscan_chart.png')
+new_chart.save('lof_chart.png')
 new_chart
 # %%

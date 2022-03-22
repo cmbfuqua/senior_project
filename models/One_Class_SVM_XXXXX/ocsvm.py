@@ -80,29 +80,20 @@ normal_chart = sqft|grd|lot
 ##############################
 # import new models
 ##############################
-from sklearn.cluster import DBSCAN
-import numpy as np
+from sklearn.svm import OneClassSVM as ocsvm
 ##################################
 # clean up data with outlier detection model
 ##################################
-detection_model = DBSCAN(
-    eps = 10,
-    min_samples = 10
-)
+detection_model = ocsvm()
 
-db = detection_model.fit(data_train)
+detection_model.fit(data_train)
 
-core_samples_mask = np.zeros_like(db.labels_, dtype = bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
+pred = pd.DataFrame(detection_model.predict(data_train))
 
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise_ = list(labels).count(-1)
+pred = pred.loc[pred[0] ==1 ].index
 
-print("Estimated number of clusters: %d" % n_clusters_)
-print("Estimated number of noise points: %d" % n_noise_)
+data_clean = data_train.iloc[pred]
 
-data_clean = data_train.iloc[db.core_sample_indices_]
 #%%
 ###################################
 # Create new charts

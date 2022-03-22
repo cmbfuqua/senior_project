@@ -217,7 +217,7 @@ df_results = pd.DataFrame(
     'start_rows':base}
 )
 # %%
-chart1 = alt.Chart(df_results).mark_line().encode(
+chart1 = alt.Chart(df_results,title = 'RMSE Curve').mark_line().encode(
     alt.X('eps'),
     alt.Y('rmse_values'),
     alt.Color('min_samples:N')
@@ -225,7 +225,7 @@ chart1 = alt.Chart(df_results).mark_line().encode(
 chart1
 # %%
 df_results['percent_remaining'] = df_results.remaining_rows/20000
-chart2 = alt.Chart(df_results).mark_line().encode(
+chart2 = alt.Chart(df_results,title = '% Remaining Rows').mark_line().encode(
     alt.X('eps'),
     alt.Y('percent_remaining'),
     alt.Color('min_samples:O',sort='descending')

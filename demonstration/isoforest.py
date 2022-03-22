@@ -212,7 +212,7 @@ df_results = pd.DataFrame(
     'start_rows':base}
 )
 # %%
-chart1 = alt.Chart(df_results).mark_line().encode(
+chart1 = alt.Chart(df_results,title = 'RMSE Curve').mark_line().encode(
     alt.X('contam',title = 'Contamination %'),
     alt.Y('rmse_values')
 )

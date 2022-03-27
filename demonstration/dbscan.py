@@ -249,28 +249,37 @@ detection_model = DBSCAN(
 )
 
 db = detection_model.fit(data_train)
+#%%
+data_clean = data_train.loc[data_train.index.isin(db.core_sample_indices_)]
+data_clean['type'] = 'Inlier'
+data_dirty = data_train.loc[~data_train.index.isin(db.core_sample_indices_)]
+data_dirty['type'] = 'Outlier'
 
-data_clean = data_train.iloc[db.core_sample_indices_]
-
+data_clean = pd.concat([data_dirty,data_clean])
+#%%
 ###################################
 # Create new charts
 ###################################
-nsqft = alt.Chart(data_clean, title = 'Sqft Living Correlation').mark_point().encode(
-    alt.X('price',title = 'Price'),
-    alt.Y('sqft_living_scaled', title = 'Square ft Living Space')
+data_clean['pricef'] = data_clean.price/1000000
+nsqft = alt.Chart(data_clean,).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('sqft_living_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
-ngrd = alt.Chart(data_clean, title = 'Grade Correlation').mark_point().encode(
-    alt.X('price',title = 'Price'),
-    alt.Y('grade_scaled', title = 'Grade of House')
+ngrd = alt.Chart(data_clean).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('grade_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
 
-nlot = alt.Chart(data_clean,title = 'Sqft Lot Correlation').mark_point().encode(
-    alt.X('price', title = 'Price'),
-    alt.Y('sqft_lot_scaled',title = 'Sqft Plot of Land')
+nlot = alt.Chart(data_clean).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('sqft_lot_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
     
 )
 
 new_chart = nsqft|ngrd|nlot
-new_chart.save('dbscan_chart.png')
+new_chart.save('images/dbscan_chart.png')
 new_chart
 # %%

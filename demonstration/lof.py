@@ -223,6 +223,7 @@ chart_fin.save('lof_percent_remaining.png')
 # clean up data with outlier detection model
 ##################################
 # Insert the best eps and min_samples values found above
+from sklearn.neighbors import LocalOutlierFactor as lof
 
 detection_model = lof(
     n_neighbors=10
@@ -230,28 +231,35 @@ detection_model = lof(
 
 pred = pd.DataFrame(detection_model.fit_predict(data_train))
 
-indicies = pred.loc[pred[0] == 1].index
-data_clean = data_train.iloc[indicies]
+data_train['prediction'] = pred
 
+data_train.loc[data_train.prediction == 1,'type'] = 'Inlier'
+data_train.loc[data_train.prediction == -1,'type'] = 'Outlier'
+data_clean = data_train.copy()
+#%%
 ###################################
 # Create new charts
 ###################################
-nsqft = alt.Chart(data_clean, title = 'Sqft Living Correlation').mark_point().encode(
-    alt.X('price',title = 'Price'),
-    alt.Y('sqft_living_scaled', title = 'Square ft Living Space')
+data_clean['pricef'] = data_clean.price/1000000
+nsqft = alt.Chart(data_clean,).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('sqft_living_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
-ngrd = alt.Chart(data_clean, title = 'Grade Correlation').mark_point().encode(
-    alt.X('price',title = 'Price'),
-    alt.Y('grade_scaled', title = 'Grade of House')
+ngrd = alt.Chart(data_clean).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('grade_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
 
-nlot = alt.Chart(data_clean,title = 'Sqft Lot Correlation').mark_point().encode(
-    alt.X('price', title = 'Price'),
-    alt.Y('sqft_lot_scaled',title = 'Sqft Plot of Land')
+nlot = alt.Chart(data_clean).mark_point().encode(
+    alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
+    alt.X('sqft_lot_scaled',title = None,),
+    alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
     
 )
 
 new_chart = nsqft|ngrd|nlot
-new_chart.save('lof_chart.png')
+#new_chart.save('images/lof_chart.png')
 new_chart
 # %%

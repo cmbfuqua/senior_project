@@ -230,27 +230,27 @@ detection_model.fit(data_train)
 
 iso = detection_model.predict(data_train)
 
-data_clean = data_train.copy()
+data_cleaniso = data_train.copy()
 
-data_clean['prediction'] = iso
-data_clean.loc[data_clean.prediction == 1,'type'] = 'Inlier'
-data_clean.loc[data_clean.prediction == -1,'type'] = 'Outlier'
+data_cleaniso['prediction'] = iso
+data_cleaniso.loc[data_cleaniso.prediction == 1,'type'] = 'Inlier'
+data_cleaniso.loc[data_cleaniso.prediction == -1,'type'] = 'Outlier'
 ###################################
 # Create new charts
 ###################################
-data_clean['pricef'] = data_clean.price/1000000
-nsqft = alt.Chart(data_clean,).mark_point().encode(
+data_cleaniso['pricef'] = data_cleaniso.price/1000000
+nsqft = alt.Chart(data_cleaniso,).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('sqft_living_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
-ngrd = alt.Chart(data_clean).mark_point().encode(
+ngrd = alt.Chart(data_cleaniso).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('grade_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
 
-nlot = alt.Chart(data_clean).mark_point().encode(
+nlot = alt.Chart(data_cleaniso).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('sqft_lot_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))

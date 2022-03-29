@@ -250,29 +250,29 @@ detection_model = DBSCAN(
 
 db = detection_model.fit(data_train)
 #%%
-data_clean = data_train.loc[data_train.index.isin(db.core_sample_indices_)]
-data_clean['type'] = 'Inlier'
-data_dirty = data_train.loc[~data_train.index.isin(db.core_sample_indices_)]
-data_dirty['type'] = 'Outlier'
+data_cleandb = data_train.loc[data_train.index.isin(db.core_sample_indices_)]
+data_cleandb['type'] = 'Inlier'
+data_dirtydb = data_train.loc[~data_train.index.isin(db.core_sample_indices_)]
+data_dirtydb['type'] = 'Outlier'
 
-data_clean = pd.concat([data_dirty,data_clean])
+data_cleandb = pd.concat([data_dirtydb,data_cleandb])
 #%%
 ###################################
 # Create new charts
 ###################################
-data_clean['pricef'] = data_clean.price/1000000
-nsqft = alt.Chart(data_clean,).mark_point().encode(
+data_cleandb['pricef'] = data_cleandb.price/1000000
+nsqft = alt.Chart(data_cleandb).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('sqft_living_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
-ngrd = alt.Chart(data_clean).mark_point().encode(
+ngrd = alt.Chart(data_cleandb).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('grade_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))
 )
 
-nlot = alt.Chart(data_clean).mark_point().encode(
+nlot = alt.Chart(data_cleandb).mark_point().encode(
     alt.Y('pricef',title = None,axis = alt.Axis(format = '$')),
     alt.X('sqft_lot_scaled',title = None,),
     alt.Color('type',title = None,scale = alt.Scale(domain = ['Inlier','Outlier'],range = ['#ff7f0e','#1f77b4']))

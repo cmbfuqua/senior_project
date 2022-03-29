@@ -36,20 +36,19 @@ data = pd.DataFrame(data)
 data['Y'][50] = 500
 data['Y'][49] = 500
 data['Y'][51] = 500
-chart1 = alt.Chart(data, title = 'Sample 1').mark_point().encode(
-    alt.X('X')
+chart1 = alt.Chart(data).mark_point().encode(
+    alt.X('X',title = None,axis = None)
 )
 
-chart2 = alt.Chart(data, title = 'Sample 2').mark_point().encode(
-    alt.Y('Y')
+chart2 = alt.Chart(data).mark_point().encode(
+    alt.Y('Y',title = None,axis = None)
 )
 
-chart3 = alt.Chart(data, title = 'Sample 3').mark_line(point = True).encode(
+chart3 = alt.Chart(data, title = 'Multivariate').mark_line(point = True).encode(
     alt.X('X'),
     alt.Y('Y')
 )
-
-chart1.save('images/local1.png')
-chart3.save('images/local3.png')
-chart2.save('images/local2.png')
+#%%
+chart_fin = chart2|(chart3&chart1)
+chart_fin.save('Multivariate_example.png')
 #%%

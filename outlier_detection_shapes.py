@@ -85,11 +85,6 @@ for i_dataset, X in enumerate(datasets):
         else:
             y_pred = algorithm.fit(X).predict(X)
 
-        # plot the levels lines and the points
-        if name == "Isolation Forest":  # LOF does not implement predict
-            Z = algorithm.predict(np.c_[xx.ravel(), yy.ravel()])
-            Z = Z.reshape(xx.shape)
-            plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors="black")
         colors = np.array(["#377eb8", "#ff7f00"])
         plt.scatter(X[:, 0], X[:, 1], s=10, color=colors[(y_pred + 1) // 2])
 
